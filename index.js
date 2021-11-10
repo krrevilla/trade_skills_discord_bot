@@ -1,18 +1,30 @@
 require('dotenv').config();
 
 const { Client, Intents } = require('discord.js');
+const { readSkill, updateSkill } = require('./helpers');
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
-client.on("ready", () => {
-    console.log(`Logged in as ${client.user.tag}!`)
-})
+client.on('ready', () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+});
 
-client.on("message", msg => {
-    console.log({ msg });
+const prefix = '!';
 
-    if (msg.content === "ping") {
-        msg.reply("pong");
+client.on('message', message => {
+    const commandBody = message.content.slice(prefix.length).trim();
+    const args = commandBody.split(' ');
+
+    if (message.author.bot || !message.content.startsWith(prefix) || commandBody === '') return;
+
+    switch (args[0].toLowerCase()) {
+        case 'view':
+            readSkill(args, message);
+            break;
+
+        case 'update':
+            updateSkill(args, message);
+            break;
     }
 })
 
